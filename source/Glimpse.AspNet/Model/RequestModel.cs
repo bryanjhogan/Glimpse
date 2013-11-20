@@ -12,7 +12,7 @@ namespace Glimpse.AspNet.Model
         {
             var request = context.Request;
 
-            //Browser = request.Browser;
+            Browser = GetBrowser(request);
             Cookies = GetCookies(request, context.Server);
             CurrentUiCulture = Thread.CurrentThread.CurrentUICulture;
             Files = GetPostedFiles(request);
@@ -39,7 +39,7 @@ namespace Glimpse.AspNet.Model
 
         //// TODO: Add InputStream
 
-        //public HttpBrowserCapabilitiesBase Browser { get; private set; }
+        public BrowserInfo Browser { get; private set; }
         public IEnumerable<Cookie> Cookies { get; private set; }
         public CultureInfo CurrentUiCulture { get; private set; }
         public IEnumerable<PostedFile> Files { get; private set; }
@@ -62,6 +62,21 @@ namespace Glimpse.AspNet.Model
         public string PathInfo { get; private set; }
         public string PhysicalApplicationPath { get; private set; }
         public string PhysicalPath { get; private set; }
+
+
+        private BrowserInfo GetBrowser(HttpRequestBase httpRequest)
+        {
+            if (httpRequest != null)
+            {
+                HttpBrowserCapabilitiesBase browserCapabilities = httpRequest.Browser;
+
+                if (browserCapabilities != null)
+                {
+                    return new BrowserInfo {Name = browserCapabilities.Browser, Version = browserCapabilities.Version};
+                }
+            }
+            return null;
+        }
 
         private IEnumerable<Cookie> GetCookies(HttpRequestBase httpRequest, HttpServerUtilityBase server)
         {
@@ -162,6 +177,12 @@ namespace Glimpse.AspNet.Model
                     }
                 }
             }
+        }
+
+        public class BrowserInfo
+        {
+            public string Name { get; set; }
+            public string Version { get; set; }
         }
 
         public class Cookie
