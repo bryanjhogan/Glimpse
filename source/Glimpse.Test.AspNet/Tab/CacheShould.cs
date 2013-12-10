@@ -8,8 +8,11 @@ using Xunit;
 
 namespace Glimpse.Test.AspNet.Tab
 {
-    public class CacheShould
+    public class CacheShould : IDisposable
     {
+        private const string CacheItemKey = "testItemKey";
+        private const string CacheItemValue = "testItemValue";
+
         [Fact]
         public void CacheSlidingExpiration()
         {
@@ -17,15 +20,15 @@ namespace Glimpse.Test.AspNet.Tab
             var cache = new Glimpse.AspNet.Tab.Cache();
             var slidingExpiration = new TimeSpan(2, 0, 0);
 
-            HttpRuntime.Cache.Add("testItem", "testItemValue", null, Cache.NoAbsoluteExpiration, slidingExpiration,
+            HttpRuntime.Cache.Add(CacheItemKey, CacheItemValue, null, Cache.NoAbsoluteExpiration, slidingExpiration,
                       CacheItemPriority.AboveNormal, null);
 
-            var result = cache.GetData(contextMock.Object);
+            var cachedItem = cache.GetData(contextMock.Object);
 
-            Assert.NotNull(result);
-            Assert.NotNull(result as CacheModel);
+            Assert.NotNull(cachedItem);
+            Assert.NotNull(cachedItem as CacheModel);
 
-            var cacheModel = result as CacheModel;
+            var cacheModel = cachedItem as CacheModel;
            
             Assert.Equal(cacheModel.CacheItems.Count, 1);
             Assert.Equal(cacheModel.CacheItems[0].SlidingExpiration, slidingExpiration);
@@ -38,20 +41,26 @@ namespace Glimpse.Test.AspNet.Tab
             var cache = new Glimpse.AspNet.Tab.Cache();
             DateTime cacheExpiryDate = DateTime.Now.AddHours(6).ToUniversalTime();
 
-            HttpRuntime.Cache.Add("testItem", "testItemValue", null, cacheExpiryDate, Cache.NoSlidingExpiration,
+            HttpRuntime.Cache.Add(CacheItemKey, CacheItemValue, null, cacheExpiryDate, Cache.NoSlidingExpiration,
                       CacheItemPriority.AboveNormal, null);
 
-            var result = cache.GetData(contextMock.Object);
+            var cachedItem = cache.GetData(contextMock.Object);
 
-            Assert.NotNull(result);
-            Assert.NotNull(result as CacheModel);
+            Assert.NotNull(cachedItem);
+            Assert.NotNull(cachedItem as CacheModel);
 
-            var cacheModel = result as CacheModel;
+            var cacheModel = cachedItem as CacheModel;
 
             Assert.Equal(cacheModel.CacheItems.Count, 1);
 
             var expiresOn = (DateTime)cacheModel.CacheItems[0].ExpiresOn;
-            Assert.Equal(expiresOn.ToUniversalTime(), cacheExpiryDate);
+            Assert.Equal(expiresOn, cacheExpiryDate);
+        }
+
+        
+        public void Dispose()
+        {
+            HttpRuntime.Cache.Remove(CacheItemKey);
         }
     }
 
