@@ -23,12 +23,9 @@ namespace Glimpse.Test.AspNet.Tab
             HttpRuntime.Cache.Add(CacheItemKey, CacheItemValue, null, Cache.NoAbsoluteExpiration, slidingExpiration,
                       CacheItemPriority.AboveNormal, null);
 
-            var cachedItem = cache.GetData(contextMock.Object);
+            var cacheModel = cache.GetData(contextMock.Object) as CacheModel;
 
-            Assert.NotNull(cachedItem);
-            Assert.NotNull(cachedItem as CacheModel);
-
-            var cacheModel = cachedItem as CacheModel;
+            Assert.NotNull(cacheModel);
            
             Assert.Equal(cacheModel.CacheItems.Count, 1);
             Assert.Equal(cacheModel.CacheItems[0].SlidingExpiration, slidingExpiration);
@@ -39,21 +36,18 @@ namespace Glimpse.Test.AspNet.Tab
         {
             var contextMock = new Mock<ITabContext>();
             var cache = new Glimpse.AspNet.Tab.Cache();
-            DateTime cacheExpiryDate = DateTime.Now.AddHours(6).ToUniversalTime();
+            var cacheExpiryDate = DateTime.Now.AddHours(6).ToUniversalTime();
 
             HttpRuntime.Cache.Add(CacheItemKey, CacheItemValue, null, cacheExpiryDate, Cache.NoSlidingExpiration,
                       CacheItemPriority.AboveNormal, null);
 
-            var cachedItem = cache.GetData(contextMock.Object);
+            var cacheModel = cache.GetData(contextMock.Object) as CacheModel;
 
-            Assert.NotNull(cachedItem);
-            Assert.NotNull(cachedItem as CacheModel);
-
-            var cacheModel = cachedItem as CacheModel;
+            Assert.NotNull(cacheModel);
 
             Assert.Equal(cacheModel.CacheItems.Count, 1);
 
-            var expiresOn = (DateTime)cacheModel.CacheItems[0].ExpiresOn;
+            var expiresOn = cacheModel.CacheItems[0].ExpiresOn;
             Assert.Equal(expiresOn, cacheExpiryDate);
         }
 
