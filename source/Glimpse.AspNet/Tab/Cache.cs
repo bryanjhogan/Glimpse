@@ -74,9 +74,9 @@ namespace Glimpse.AspNet.Tab
                 ProcessInfoSlidingExpiration = TypeCacheEntity.GetProperty("SlidingExpiration", BindingFlags.NonPublic | BindingFlags.Instance);
             }
 
-            cacheItemModel.CreatedOn = GetCacheProperty(ProcessInfoUtcCreated, cacheEntry);
-            cacheItemModel.ExpiresOn = GetCacheProperty(ProcessInfoUtcExpires, cacheEntry);
-            cacheItemModel.SlidingExpiration = GetCacheProperty(ProcessInfoSlidingExpiration, cacheEntry);
+            cacheItemModel.CreatedOn = (DateTime) GetCacheProperty(ProcessInfoUtcCreated, cacheEntry);
+            cacheItemModel.ExpiresOn = (DateTime) GetCacheProperty(ProcessInfoUtcExpires, cacheEntry);
+            cacheItemModel.SlidingExpiration = (TimeSpan) GetCacheProperty(ProcessInfoSlidingExpiration, cacheEntry);
 
             return true;
         }

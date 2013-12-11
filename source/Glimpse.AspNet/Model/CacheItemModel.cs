@@ -1,4 +1,6 @@
-﻿namespace Glimpse.AspNet.Model
+﻿using System;
+
+namespace Glimpse.AspNet.Model
 {
     public class CacheItemModel
     {
@@ -6,10 +8,10 @@
 
         public object Value { get; set; }
 
-        public object CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
 
-        public object ExpiresOn { get; set; }
+        public DateTime ExpiresOn { get; set; }
 
-        public object SlidingExpiration { get; set; }
+        public TimeSpan SlidingExpiration { get; set; }
     }
 }
