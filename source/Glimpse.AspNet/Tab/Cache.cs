@@ -19,7 +19,7 @@ namespace Glimpse.AspNet.Tab
         private static PropertyInfo ProcessInfoUtcExpires;
         private static PropertyInfo ProcessInfoSlidingExpiration;
 
-        static Cache() 
+        static Cache()
         {
             //need an item in the cache to call the MethodInfoCacheGet.Invoke below.
             HttpRuntime.Cache.Add(TestCacheKey, "", null, DateTime.Now.AddHours(1), System.Web.Caching.Cache.NoSlidingExpiration,
@@ -48,6 +48,9 @@ namespace Glimpse.AspNet.Tab
         {
             var cacheModel = new CacheModel();
             var cacheEnumerator = HttpRuntime.Cache.GetEnumerator();
+            cacheModel.Configuration.EffectivePercentagePhysicalMemoryLimit = HttpRuntime.Cache.EffectivePercentagePhysicalMemoryLimit;
+            cacheModel.Configuration.EffectivePrivateBytesLimit = HttpRuntime.Cache.EffectivePrivateBytesLimit;
+
             while (cacheEnumerator.MoveNext())
             {
                 var currentCacheEntry = cacheEnumerator.Entry;
@@ -56,8 +59,6 @@ namespace Glimpse.AspNet.Tab
                 if (TryGetCacheItemModel(currentCacheEntry, out cacheItemModel))
                 {
                     cacheModel.CacheItems.Add(cacheItemModel);
-                    cacheModel.Configuration.EffectivePercentagePhysicalMemoryLimit = HttpRuntime.Cache.EffectivePercentagePhysicalMemoryLimit;
-                    cacheModel.Configuration.EffectivePrivateBytesLimit = HttpRuntime.Cache.EffectivePrivateBytesLimit;
                 }
             }
 
@@ -68,21 +69,27 @@ namespace Glimpse.AspNet.Tab
         {
             cacheItemModel = new CacheItemModel();
             object cacheEntry;
+
             try
             {
                 cacheEntry = MethodInfoCacheGet.Invoke(HttpRuntime.Cache, new object[] { currentCacheEntry.Key, 1 });
+
+                cacheItemModel.Key = currentCacheEntry.Key.ToString();
+                cacheItemModel.Value = Serialization.GetValueSafe(currentCacheEntry.Value);
+                cacheItemModel.CreatedOn = GetCacheProperty(ProcessInfoUtcCreated, cacheEntry) as DateTime?;
+                cacheItemModel.ExpiresOn = GetCacheProperty(ProcessInfoUtcExpires, cacheEntry) as DateTime?;
+                if (cacheItemModel.ExpiresOn == DateTime.MaxValue)
+                {
+                    cacheItemModel.ExpiresOn = null;
+                }
+
+                cacheItemModel.SlidingExpiration = GetCacheProperty(ProcessInfoSlidingExpiration, cacheEntry) as TimeSpan?;
             }
-            catch (NullReferenceException)
+            catch (Exception)
             {
                 cacheItemModel = null;
                 return false;
             }
-
-            cacheItemModel.Key = currentCacheEntry.Key.ToString();
-            cacheItemModel.Value = Serialization.GetValueSafe(currentCacheEntry.Value);
-            cacheItemModel.CreatedOn = (DateTime)GetCacheProperty(ProcessInfoUtcCreated, cacheEntry);
-            cacheItemModel.ExpiresOn = (DateTime)GetCacheProperty(ProcessInfoUtcExpires, cacheEntry);
-            cacheItemModel.SlidingExpiration = (TimeSpan)GetCacheProperty(ProcessInfoSlidingExpiration, cacheEntry);
 
             return true;
         }
