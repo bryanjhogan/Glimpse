@@ -1,0 +1,36 @@
+﻿@model Glimpse.Mvc5.Sample.BLL.Employee
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>Employee</legend>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Firstname)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Firstname)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Lastname)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Lastname)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.RoleID)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.RoleID)
+    </div>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.EmployeeID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

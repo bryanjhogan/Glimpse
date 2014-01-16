@@ -1,0 +1,34 @@
+﻿@model IEnumerable<Glimpse.Mvc5.Sample.BLL.Employee>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table>
+    <tr>
+        <th>First name</th>
+        <th>Last name</th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @item.Firstname
+        </td>
+        <td>
+            @item.Lastname
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { item.EmployeeID }) |
+            @Html.ActionLink("Details", "Details", new { item.EmployeeID }) |
+            @Html.ActionLink("Delete", "Delete", new { item.EmployeeID })
+        </td>
+    </tr>
+}
+
+</table>

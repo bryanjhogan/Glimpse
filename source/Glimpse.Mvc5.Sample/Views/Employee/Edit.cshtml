@@ -1,0 +1,74 @@
+﻿@model Glimpse.Mvc5.Sample.ViewModels.EmployeeViewModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>EmployeeViewModel</legend>
+        
+        <div class="display-label">
+            @Html.LabelFor(model => model.Employee.EmployeeID)
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.Employee.EmployeeID)
+        </div>
+        
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Employee.Firstname)  
+        </div>
+        <div class="editor-field">
+            @Html.Editor("Employee.Firstname","","Firstname") 
+        </div>
+        
+        
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Employee.Lastname)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Employee.Lastname,"", "Lastname") 
+        </div>
+
+
+        <div class="editor-label">
+            @Html.Label("Reason for edit") 
+        </div>
+        <div class="editor-field">
+            @Html.TextBox("ReasonForEdit",null) This is not part of the Employee model
+        </div>        
+        
+        <div class="editor-label">
+            @Html.Label("Some other argument") 
+        </div>
+        <div class="editor-field">
+            @Html.TextBox("SomeOtherArgument",null) This is not part of the Employee model
+        </div>        
+        
+
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Employee.RoleID, "Role ID")
+        </div>
+        <div class="editor-field">
+            @Html.DropDownListFor(model => model.Employee.RoleID, Model.Roles, "--Select a role --", new { Name = "RoleID"} )
+        </div>
+
+        <p>
+            <input type="submit" value="Save" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
